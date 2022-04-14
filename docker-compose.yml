@@ -1,0 +1,51 @@
+version: '3.8'
+
+services:
+  web:
+    build:
+      context: ../../Downloads
+      dockerfile: Dockerfile
+    ports:
+      - 8000:8000
+    depends_on:
+      - db
+      - redis
+    env_file:
+      - configs/conf.env
+
+  db:
+    restart: always
+    image: postgres:latest
+    volumes:
+      - ./data/postgres:/var/lib/postgresql/data
+    env_file:
+      - configs/conf.env
+    ports:
+      - 5432:5432
+
+  redis:
+    image: "redis:alpine"
+
+    command: redis-server --requirepass sOmE_sEcUrE_pAsS
+
+    ports:
+     - "6379:6379"
+
+    volumes:
+     - ./data/redis/redis-data:/var/lib/redis
+     - ./data/redis/redis.conf:/usr/local/etc/redis/redis.conf
+
+    environment:
+     - REDIS_REPLICATION_MODE=master
+
+    networks:
+      node_net:
+        ipv4_address: 172.28.1.4
+
+# networking for the Redis container
+networks:
+  node_net:
+    ipam:
+      driver: default
+      config:
+        - subnet: 172.28.0.0/16

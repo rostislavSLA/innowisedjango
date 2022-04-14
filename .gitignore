@@ -1,0 +1,5 @@
+/data/postgres/pg_multixact/members/0000
+/data
+/configs/conf.env
+.gitignore
+.idea
