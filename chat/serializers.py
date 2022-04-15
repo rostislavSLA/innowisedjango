@@ -1,5 +1,5 @@
 from rest_framework import serializers
-from .models import User
+from .models import User, Ticket
 
 
 class UserSerializer(serializers.ModelSerializer):
@@ -17,3 +17,9 @@ class UserSerializer(serializers.ModelSerializer):
                 instance.set_password(password)
             instance.save()
             return instance
+
+
+class TicketSerializer(serializers.HyperlinkedModelSerializer):
+    class Meta:
+        model = Ticket
+        fields = ('id', 'title', 'user', 'status', 'content', 'category', 'created', 'modified')
