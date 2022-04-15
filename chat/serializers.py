@@ -1,5 +1,5 @@
 from rest_framework import serializers
-from .models import User
+from .models import User, Ticket, Category
 
 
 class UserSerializer(serializers.ModelSerializer):
@@ -17,3 +17,16 @@ class UserSerializer(serializers.ModelSerializer):
                 instance.set_password(password)
             instance.save()
             return instance
+
+
+class TicketSerializer(serializers.HyperlinkedModelSerializer):
+    class Meta:
+        model = Ticket
+        fields = ('id', 'title', 'user', 'status', 'content', 'category', 'created', 'modified')
+
+
+# Serializers define the API representation.
+class CategorySerializer(serializers.HyperlinkedModelSerializer):
+    class Meta:
+        model = Category
+        fields = ('name', 'slug')
