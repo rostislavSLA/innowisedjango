@@ -1,5 +1,8 @@
 from rest_framework import serializers
+
 from .models import User, Ticket, Category
+
+
 
 
 class UserSerializer(serializers.ModelSerializer):
@@ -30,3 +33,5 @@ class CategorySerializer(serializers.HyperlinkedModelSerializer):
     class Meta:
         model = Category
         fields = ('name', 'slug')
+        
+
