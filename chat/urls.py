@@ -1,13 +1,14 @@
 from django.urls import path
 from .views import RegisterView, LoginView, UserView, Logout
+
 from .views import TicketViewSet, CategoryViewSet
+
 from rest_framework import routers
 
 router = routers.DefaultRouter()
 
 router.register('tickets', TicketViewSet)
-router.register('category', CategoryViewSet)
-
+router.register('tickets', CategoryViewSet)
 
 urlpatterns = [
     path('register', RegisterView.as_view()),
