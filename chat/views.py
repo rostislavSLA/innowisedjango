@@ -1,13 +1,15 @@
 from rest_framework.views import APIView
-from .serializers import UserSerializer
 from rest_framework.response import Response
-from rest_framework.exceptions import AuthenticationFailed
 from .models import User
 import jwt, datetime
 from django.http import response
 from rest_framework import routers,  viewsets
-from .models import Ticket
-from .serializers import TicketSerializer
+
+from .models import Ticket, Category
+from .serializers import UserSerializer, TicketSerializer, CategorySerializer
+
+
+
 
 
 class RegisterView(APIView):
@@ -53,6 +55,12 @@ class TicketViewSet(viewsets.ModelViewSet):
     serializer_class = TicketSerializer
 
 
+
+class CategoryViewSet(viewsets.ModelViewSet):
+    queryset = Category.objects.all()
+    serializer_class = CategorySerializer
+
+    
 class UserView(APIView):
     def get(self, request):
         token = request.COOKIES.get('jwt')
