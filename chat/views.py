@@ -1,11 +1,13 @@
-import datetime
-import jwt
-from rest_framework.exceptions import AuthenticationFailed
-from rest_framework.response import Response
 from rest_framework.views import APIView
-
-from .models import User
 from .serializers import UserSerializer
+from rest_framework.response import Response
+from rest_framework.exceptions import AuthenticationFailed
+from .models import User
+import jwt, datetime
+from django.http import response
+from rest_framework import routers,  viewsets
+from .models import Ticket, Category
+from .serializers import TicketSerializer, CategorySerializer
 
 
 class RegisterView(APIView):
@@ -15,7 +17,6 @@ class RegisterView(APIView):
         serializer.save()
         return Response(serializer.data)
 
-
 class LoginView(APIView):
     def post(self, request):
         email = request.data['email']
@@ -24,15 +25,15 @@ class LoginView(APIView):
         user = User.objects.filter(email=email).first()
 
         if user is None:
-            raise AuthenticationFailed('Пользователь не найден')
+           raise AuthenticationFailed('Пользователь не найден')
 
         if not user.check_password(password):
-            raise AuthenticationFailed('Неверный пароль')
+           raise AuthenticationFailed('Неверный пароль')
 
         payload = {
-            'id': user.id,
-            'exp': datetime.datetime.utcnow() + datetime.timedelta(minutes=300),
-            'iat': datetime.datetime.utcnow()
+           'id': user.id,
+           'exp': datetime.datetime.utcnow() + datetime.timedelta(minutes=300),
+           'iat': datetime.datetime.utcnow()
         }
 
         token = jwt.encode(payload, 'secret', algorithm='HS256').decode('utf-8')
@@ -41,10 +42,20 @@ class LoginView(APIView):
 
         response.set_cookie(key='jwt', value=token, httponly=True)
         response.data = {
-            'jwt': token
+           'jwt': token
         }
 
         return response
+
+
+class TicketViewSet(viewsets.ModelViewSet):
+    queryset = Ticket.objects.all()
+    serializer_class = TicketSerializer
+
+
+class CategoryViewSet(viewsets.ModelViewSet):
+    queryset = Category.objects.all()
+    serializer_class = CategorySerializer
 
 
 class UserView(APIView):
@@ -63,6 +74,7 @@ class UserView(APIView):
 
         serializer = UserSerializer(user)
         return Response(serializer.data)
+
 
 
 class Logout(APIView):
