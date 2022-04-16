@@ -4,12 +4,13 @@ services:
   web:
     build:
       context: ../../Downloads
-      dockerfile: Dockerfile
+
     ports:
       - 8000:8000
     depends_on:
       - db
       - redis
+      - worker
     env_file:
       - configs/conf.env
 
@@ -34,6 +35,7 @@ services:
     volumes:
      - ./data/redis/redis-data:/var/lib/redis
      - ./data/redis/redis.conf:/usr/local/etc/redis/redis.conf
+ #    - ./data/redis/data:/usr/local/etc/redis/redis.conf/var/lib/redis/data
 
     environment:
      - REDIS_REPLICATION_MODE=master
@@ -41,6 +43,17 @@ services:
     networks:
       node_net:
         ipv4_address: 172.28.1.4
+
+
+  worker:
+    build:
+      context: .
+    hostname: worker
+    entrypoint: celery
+    command: -A celery_app.celery worker --loglevel=info
+    volumes:
+      - ./data/celary:/app
+
 
 # networking for the Redis container
 networks:
